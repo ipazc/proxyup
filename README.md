@@ -1,5 +1,11 @@
 # PROXYUP
 
+[![Build Status](https://travis-ci.org/ipazc/proxyup.svg?branch=master)](https://travis-ci.org/ipazc/proxyup)
+[![PyPI repository](https://badge.fury.io/py/proxyup.svg)](https://badge.fury.io/py/proxyup)
+[![Code Coverage](https://coveralls.io/repos/github/ipazc/proxyup/badge.svg?branch=master)](https://coveralls.io/github/ipazc/proxyup?branch=master)
+[![Code Health](https://landscape.io/github/ipazc/proxyup/master/landscape.svg?style=flat)](https://landscape.io/github/ipazc/proxyup/master/landscape.svg?style=flat)
+
+
 ProxyUP is a package designed for retrieving proxies from a public API. Transparently, it will only retrieve valid proxies, 
 checking them constantly at a fixed rate and ensuring the proxies answer before their delivery.
 
