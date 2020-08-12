@@ -17,16 +17,18 @@ def log_debug(*args, **kwargs):
 
 
 class ProxyupRetriever:
-    URL = "https://api.proxyscrape.com/?request=getproxies&proxytype={}&timeout=500&country=all&ssl=all&anonymity=all"
+    URL = "https://api.proxyscrape.com/?request=getproxies&proxytype={}&timeout={}&country={}&ssl=all&anonymity=all"
     CHECK_URL = "https://www.google.com/"
 
-    def __init__(self, proxy_type="http", pool_njobs=15, update_interval_seconds=120, check_interval_seconds=60,
-                 auto_start=False, proxy_cache_size=1000):
+    def __init__(self, proxy_type="http", proxy_country="all", proxy_timeout=500, pool_njobs=15,
+                 update_interval_seconds=120, check_interval_seconds=60, auto_start=False, proxy_cache_size=1000):
         self._proxy_type = proxy_type
         self._pool_checker = ThreadPoolExecutor(pool_njobs, thread_name_prefix="proxyup")
         self._update_interval_seconds = update_interval_seconds
         self._check_interval_seconds = check_interval_seconds
         self._proxy_cache_size = proxy_cache_size
+        self._proxy_timeout = proxy_timeout
+        self._proxy_country = proxy_country
 
         self._num_proxies_to_deliver_simultaneously = 1
         self._timeout_iteration_seconds = 0
@@ -176,7 +178,7 @@ class ProxyupRetriever:
             return proxy
 
     def _get_proxies(self):
-        proxies = requests.get(self.URL.format(self._proxy_type)).text
+        proxies = requests.get(self.URL.format(self._proxy_type, self._proxy_timeout, self._proxy_country)).text
         proxies = [f"{self._proxy_type}://{p}" for p in proxies.split("\r\n") if p != ""]
         return proxies
 

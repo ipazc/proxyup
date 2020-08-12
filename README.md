@@ -20,10 +20,30 @@ pip install proxyup
 
 ## Basic Usage
 
-As soon as the retriever is instantiated, it will scrap proxies in the background at a fixed rate. Internally it will hold a set of valid proxies that are periodically checked and updated. 
+A simple example of use to retrieve a single http proxy:
 
+```python
+from proxyup import ProxyupRetriever
 
-In order to get a list of 4 proxies, the `get_once` method can be used:
+proxies = ProxyupRetriever()
+proxies.start()
+
+try:
+    proxy = proxies.get_once()
+finally:
+    proxies.close()
+
+print(proxy)
+
+'http://X.X.X.X:XXXX'
+```
+
+As soon as the retriever is instantiated, it begins to scrap proxies in the background at a fixed rate. Internally it will hold a list of valid proxies that are periodically checked and updated. 
+
+The `get_once()` method allows to retrieve N proxies in a single-shot. By default, only one proxy is retrieved. 
+
+It is encouraged to wrap the `ProxyupRetriever` in a context manager:
+
 ```python
 from proxyup import ProxyupRetriever
 
@@ -65,21 +85,8 @@ The internal proxy list is constantly being updated at a rate of `120` seconds, 
 
 A single update will scrap around 100-200 new proxies to include in the proxies list. Previous proxies are not removed unless they are detected to not be valid anymore.
 
-In order to avoid an internal list overflow, a limit is specified in the number of internal max proxies allowed to be kept for checks. This value is by default 1000 proxies, but it can be modified throught the parameter `proxy_cache_size`.  
+In order to avoid an internal list overflow, a limit is specified in the number of internal max proxies allowed to be kept for checks. This value is by default 1000 proxies, but it can be modified through the parameter `proxy_cache_size`.  
  
-The proxies can also be handled outside of a context manager as follows:
-```python
-from proxyup import ProxyupRetriever
-
-proxies = ProxyupRetriever()
-proxies.start()
-
-try:
-    proxy = proxies.get_once()
-finally:
-    proxies.close()
-```
-
 Note that it is important to close the proxies object. Otherwise, their internal threads will not know when to finish and will run in background forever, avoiding the process termination.
 
 
