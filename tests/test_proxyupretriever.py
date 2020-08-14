@@ -50,6 +50,6 @@ class TestProxyUPRetriever(unittest.TestCase):
         self.assertTrue(len(proxy) == PROXY_COUNT)
         self.assertTrue(all([proxy.startswith("http") for proxy in proxy_list]))
 
-    
+
 if __name__ == '__main__':
     unittest.main()

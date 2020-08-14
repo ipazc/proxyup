@@ -20,8 +20,8 @@ class ProxyupRetriever:
     URL = "https://api.proxyscrape.com/?request=getproxies&proxytype={}&timeout={}&country={}&ssl=all&anonymity=all"
     CHECK_URL = "https://www.google.com/"
 
-    def __init__(self, proxy_type="http", proxy_country="all", proxy_timeout=500, pool_njobs=15,
-                 update_interval_seconds=120, check_interval_seconds=60, auto_start=False, proxy_cache_size=1000):
+    def __init__(self, proxy_type="http", proxy_country="all", proxy_timeout=500, pool_njobs=5,
+                 update_interval_seconds=120, check_interval_seconds=60, auto_start=True, proxy_cache_size=1000):
         self._proxy_type = proxy_type
         self._pool_checker = ThreadPoolExecutor(pool_njobs, thread_name_prefix="proxyup")
         self._update_interval_seconds = update_interval_seconds
@@ -65,17 +65,18 @@ class ProxyupRetriever:
     def start(self):
         if self._thread is None:
             self.finish = False
-            self._thread = Thread(target=self._retrieve)
+            self._thread = Thread(target=self._retrieve, daemon=True)
             self._thread.start()
             log_debug("Start requested")
 
     def stop(self):
-        if not self.finish:
+        if not self.finish and self._thread is not None:
             log_debug("Stop requested")
             self.finish = True
 
             self._pool_checker.shutdown(wait=False)
             self._thread.join()
+            self._thread = None
 
     def __del__(self):
         self.stop()
