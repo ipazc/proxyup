@@ -20,7 +20,7 @@ class ProxyupRetriever:
     URL = "https://api.proxyscrape.com/?request=getproxies&proxytype={}&timeout={}&country={}&ssl=all&anonymity=all"
     CHECK_URL = "https://www.google.com/"
 
-    def __init__(self, proxy_type="http", proxy_country="all", proxy_timeout=500, pool_njobs=5,
+    def __init__(self, proxy_type="http", proxy_country="all", proxy_timeout=500, pool_njobs=5, check_url=CHECK_URL,
                  update_interval_seconds=120, check_interval_seconds=60, auto_start=True, proxy_cache_size=1000):
         self._proxy_type = proxy_type
         self._pool_checker = ThreadPoolExecutor(pool_njobs, thread_name_prefix="proxyup")
@@ -29,6 +29,7 @@ class ProxyupRetriever:
         self._proxy_cache_size = proxy_cache_size
         self._proxy_timeout = proxy_timeout
         self._proxy_country = proxy_country
+        self._check_url = check_url
 
         self._num_proxies_to_deliver_simultaneously = 1
         self._timeout_iteration_seconds = 0
@@ -153,7 +154,7 @@ class ProxyupRetriever:
         }
 
         try:
-            response = requests.get(self.CHECK_URL, proxies=proxy_dict, timeout=3)
+            response = requests.get(self._check_url, proxies=proxy_dict, timeout=3)
             status_code = response.status_code
 
         except requests.exceptions.ProxyError:

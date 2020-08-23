@@ -14,7 +14,7 @@ def readme():
 
 
 setup(name='proxyup',
-      version="0.0.3",
+      version="0.0.4",
       description='Proxy updater',
       long_description=readme(),
       long_description_content_type='text/markdown',
