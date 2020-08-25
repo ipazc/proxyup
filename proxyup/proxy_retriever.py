@@ -38,6 +38,7 @@ class ProxyupRetriever:
         self._thread = None
         self._lock = Lock()
         self._proxies = pd.DataFrame([], columns=["Confirmed", "LastCheck"], index=pd.Index([], name="Address"))
+        self._blacklist = []
 
         if auto_start:
             self.start()
@@ -179,6 +180,14 @@ class ProxyupRetriever:
         for proxy in self[number:timeout]:
             return proxy
 
+    def blacklist(self, proxy):
+        """
+        Blacklists a given proxy. This proxy will never be returned again.
+        :param proxy: proxy to blacklist, in the format 'protocol://IP:PORT'
+        """
+        with self._lock:
+            self._blacklist.append(proxy)
+
     def _get_proxies(self):
         proxies = requests.get(self.URL.format(self._proxy_type, self._proxy_timeout, self._proxy_country)).text
         proxies = [f"{self._proxy_type}://{p}" for p in proxies.split("\r\n") if p != ""]
@@ -213,6 +222,7 @@ class ProxyupRetriever:
 
             with self._lock:
                 valid_proxies = self._proxies[self._proxies['Confirmed'] == True]
+                valid_proxies = valid_proxies.loc[[proxy for proxy in valid_proxies.index if proxy not in self._blacklist]]
 
             if valid_proxies.shape[0] >= self._num_proxies_to_deliver_simultaneously:
                 valid_proxy = valid_proxies.sample(self._num_proxies_to_deliver_simultaneously).index.tolist()
