@@ -186,7 +186,9 @@ class ProxyupRetriever:
         :param proxy: proxy to blacklist, in the format 'protocol://IP:PORT'
         """
         with self._lock:
+            self._blacklist = list(self._blacklist)
             self._blacklist.append(proxy)
+            self._blacklist = set(self._blacklist)
 
     def _get_proxies(self):
         proxies = requests.get(self.URL.format(self._proxy_type, self._proxy_timeout, self._proxy_country)).text
